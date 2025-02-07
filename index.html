@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Juego Simple</title>
+    <title>Juego Simple Mejorado</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -67,12 +67,44 @@
             font-size: 12px;
             opacity: 0.7;
         }
+        
+        .search-box {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1001;
+        }
+        
+        #codeInput {
+            padding: 8px;
+            width: 200px;
+            border: 2px solid #ff9900;
+            border-radius: 5px;
+            font-family: monospace;
+        }
+        
+        .hacker-message {
+            display: none;
+            position: fixed;
+            top: 60px;
+            left: 20px;
+            color: #ff0000;
+            font-family: monospace;
+            background: black;
+            padding: 10px;
+            border: 1px solid #ff9900;
+        }
     </style>
 </head>
 <body>
     <div class="header">WORK IN PROGRESS</div>
     <div class="hosted-by">Hosted by GitHub Pages</div>
     
+    <div class="search-box">
+        <input type="text" id="codeInput" placeholder="Search something..." onkeypress="handleCodeInput(event)">
+        <div class="hacker-message" id="hackerMessage">CODE INJECTION DETECTED!</div>
+    </div>
+
     <div class="game-container">
         <h1>Click Game</h1>
         <div id="score">Points: 0</div>
@@ -80,12 +112,13 @@
     </div>
 
     <script>
+        // Sistema del juego
         let score = 0;
         let isMoving = false;
         const clickButton = document.getElementById('clickButton');
         const scoreDisplay = document.getElementById('score');
         
-        // Movement variables
+        // Variables de movimiento
         let x = window.innerWidth / 2 - 100;
         let y = window.innerHeight / 2 - 100;
         let dx = 3;
@@ -98,12 +131,12 @@
             x += dx;
             y += dy;
             
-            // Boundary collision detection
+            // Detección de colisiones con bordes
             if (x <= 0 || x >= window.innerWidth - 200) {
                 dx = -dx * (1 + speedIncrease);
                 clickButton.style.backgroundColor = `hsl(${Math.random() * 360}, 70%, 50%)`;
             }
-            if (y <= 120 || y >= window.innerHeight - 220) { // 120 = header height
+            if (y <= 120 || y >= window.innerHeight - 220) {
                 dy = -dy * (1 + speedIncrease);
                 clickButton.style.backgroundColor = `hsl(${Math.random() * 360}, 70%, 50%)`;
             }
@@ -126,9 +159,49 @@
             }
         });
 
-        // Initial position
+        // Posición inicial
         clickButton.style.left = x + 'px';
         clickButton.style.top = y + 'px';
+
+        // Sistema anti-XSS
+        const funnyAlerts = [
+            "¡Tranquilo hacker novato! 🕵️♂️",
+            "¿En serio pensaste que eso funcionaría? 😂",
+            "¡Alerta de alpaca hacker detectada! 🦙",
+            "ERROR 418: Soy una tetera anti-XSS 🫖",
+            "¡Intento de hackeo convertido en memes! 🐸"
+        ];
+
+        function handleCodeInput(e) {
+            if (e.key === 'Enter') {
+                const input = document.getElementById('codeInput');
+                const message = document.getElementById('hackerMessage');
+                
+                // Detectar intentos básicos de XSS
+                const xssPattern = /<script|alert\(|<\/script/gi;
+                
+                if (xssPattern.test(input.value)) {
+                    // Mostrar alerta graciosa
+                    alert(funnyAlerts[Math.floor(Math.random() * funnyAlerts.length)]);
+                    
+                    // Efecto hacker estilo Hollywood
+                    message.style.display = 'block';
+                    setTimeout(() => {
+                        message.style.display = 'none';
+                    }, 2000);
+                    
+                    // "Borrar" el sistema (fingido)
+                    input.value = '#include <hacker_be_gone.h>';
+                    setTimeout(() => {
+                        input.value = '';
+                    }, 500);
+                } else {
+                    // Simular análisis de código
+                    alert("Hello world! 🌍");
+                    input.value = '';
+                }
+            }
+        }
     </script>
 </body>
 </html>
