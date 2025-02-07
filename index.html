@@ -9,6 +9,7 @@
             margin: 0;
             padding: 0;
             background-color: #f0f0f0;
+            overflow-x: hidden;
         }
         
         .header {
@@ -21,6 +22,7 @@
             position: fixed;
             width: 100%;
             top: 0;
+            z-index: 1000;
         }
         
         .game-container {
@@ -40,6 +42,7 @@
             cursor: pointer;
             transition: transform 0.1s;
             margin: 20px;
+            position: absolute;
         }
         
         #clickButton:hover {
@@ -55,27 +58,77 @@
             color: #333;
             margin: 20px;
         }
+        
+        .hosted-by {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            color: #666;
+            font-size: 12px;
+            opacity: 0.7;
+        }
     </style>
 </head>
 <body>
     <div class="header">WORK IN PROGRESS</div>
+    <div class="hosted-by">Hosted by GitHub Pages</div>
     
     <div class="game-container">
-        <h1>Juego de Clics</h1>
-        <div id="score">Puntos: 0</div>
-        <button id="clickButton">¡Haz clic!</button>
+        <h1>Click Game</h1>
+        <div id="score">Points: 0</div>
+        <button id="clickButton">Click me!</button>
     </div>
 
     <script>
         let score = 0;
+        let isMoving = false;
         const clickButton = document.getElementById('clickButton');
         const scoreDisplay = document.getElementById('score');
+        
+        // Movement variables
+        let x = window.innerWidth / 2 - 100;
+        let y = window.innerHeight / 2 - 100;
+        let dx = 3;
+        let dy = 3;
+        const speedIncrease = 0.1;
+
+        function updatePosition() {
+            if (!isMoving) return;
+            
+            x += dx;
+            y += dy;
+            
+            // Boundary collision detection
+            if (x <= 0 || x >= window.innerWidth - 200) {
+                dx = -dx * (1 + speedIncrease);
+                clickButton.style.backgroundColor = `hsl(${Math.random() * 360}, 70%, 50%)`;
+            }
+            if (y <= 120 || y >= window.innerHeight - 220) { // 120 = header height
+                dy = -dy * (1 + speedIncrease);
+                clickButton.style.backgroundColor = `hsl(${Math.random() * 360}, 70%, 50%)`;
+            }
+            
+            clickButton.style.left = x + 'px';
+            clickButton.style.top = y + 'px';
+            
+            requestAnimationFrame(updatePosition);
+        }
 
         clickButton.addEventListener('click', () => {
             score++;
-            scoreDisplay.textContent = `Puntos: ${score}`;
+            scoreDisplay.textContent = `Points: ${score}`;
             clickButton.style.backgroundColor = `hsl(${score * 10}, 70%, 50%)`;
+            
+            if (score >= 20 && !isMoving) {
+                isMoving = true;
+                clickButton.textContent = "Catch me!";
+                updatePosition();
+            }
         });
+
+        // Initial position
+        clickButton.style.left = x + 'px';
+        clickButton.style.top = y + 'px';
     </script>
 </body>
 </html>
